@@ -32,7 +32,7 @@ for i, file in enumerate(avro_files):
 
     # Print info about data
     print("Reading: ", file)
-    print("Temperature info:")
+    print("Eda info:")
     print("Number of samples: {}".format(len(values)))
     print("Duration: {} seconds".format(len(values) / samplingFrequency))
     print(" ")
