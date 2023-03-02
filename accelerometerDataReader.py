@@ -3,8 +3,6 @@ from avro.datafile import DataFileReader
 from avro.io import DatumReader
 import matplotlib.pyplot as plt
 from datetime import datetime
-import json
-from pygments import highlight, lexers, formatters
 
 
 avro_file_path = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/2023-02-10/FEDE1-3YK3K1527W/raw_data/v6/"
@@ -26,15 +24,6 @@ for i, file in enumerate(avro_files):
     acc = data["rawData"]["accelerometer"]
 
     if i == 0:
-        # Print the Avro schema
-        schema = json.loads(reader.meta.get('avro.schema').decode('utf-8'))
-        formatted_schema = json.dumps(schema, indent=3)
-        colorful_schema = highlight(formatted_schema, lexers.JsonLexer(), formatters.TerminalFormatter())
-        # print(colorful_schema)
-        # print(" ")
-        with open("schema_json", 'w') as f:
-            f.write(formatted_schema)
-
         # Print structure
         print("Accelerometers fields:")
         for key, val in acc.items():
@@ -72,10 +61,17 @@ for i, file in enumerate(avro_files):
 
     # Plot
     plt.figure()
-    plt.plot(datetime_time, x_g, label="x")
-    plt.plot(datetime_time, y_g, label="y")
-    plt.plot(datetime_time, z_g, label="z")
+    plt.plot(datetime_time, x_g, label="x", linewidth=0.5)
+    plt.plot(datetime_time, y_g, label="y", linewidth=0.5)
+    plt.plot(datetime_time, z_g, label="z", linewidth=0.5)
     plt.ylabel("Acceleration [g]")
     plt.grid(True)
     plt.legend(loc="best")
-    plt.show()
+    plt.savefig('plot/accelerometer/accelerometer_'+file+'.png')
+    # plt.show()
+
+
+
+
+
+
