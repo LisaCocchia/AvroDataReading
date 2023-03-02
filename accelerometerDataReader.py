@@ -4,6 +4,7 @@ from avro.io import DatumReader
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+import Utility
 
 avro_file_path = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/2023-02-10/FEDE1-3YK3K1527W/raw_data/v6/"
 avro_files = os.listdir(avro_file_path)
@@ -25,13 +26,7 @@ for i, file in enumerate(avro_files):
 
     if i == 0:
         # Print structure
-        print("Accelerometers fields:")
-        for key, val in acc.items():
-            print("- " + key)
-            if type(val) is dict:
-                for k in val.keys():
-                    print(" - " + k)
-        print(" ")
+        Utility.print_structure(acc, "Accelerometers fields:")
 
     # Convert ADC counts in g
     delta_physical = acc["imuParams"]["physicalMax"] - acc["imuParams"]["physicalMin"]

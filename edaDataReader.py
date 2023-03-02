@@ -21,14 +21,14 @@ for i, file in enumerate(avro_files):
 
     # Plot temperature #
     # Access temperature raw data
-    temperature = data["rawData"]["temperature"]
+    eda = data["rawData"]["eda"]
 
     if i == 0:
         # Print structure
-        Utility.print_structure(temperature, "Temperature fields:")
+        Utility.print_structure(eda, "Eda fields:")
 
-    values = temperature["values"]
-    samplingFrequency = temperature["samplingFrequency"]
+    values = eda["values"]
+    samplingFrequency = eda["samplingFrequency"]
 
     # Print info about data
     print("Reading: ", file)
@@ -38,9 +38,9 @@ for i, file in enumerate(avro_files):
     print(" ")
 
     # Create time vector (in your local timezone)
-    startSeconds = temperature["timestampStart"] / 1000000
+    startSeconds = eda["timestampStart"] / 1000000
     timeSeconds = list(range(0, len(values)))
-    timeUNIX = [t / temperature["samplingFrequency"] + startSeconds for t in timeSeconds]
+    timeUNIX = [t / eda["samplingFrequency"] + startSeconds for t in timeSeconds]
     datetime_time = [datetime.fromtimestamp(x) for x in timeUNIX]
 
     plt.rcParams['figure.dpi'] = 300
@@ -50,9 +50,9 @@ for i, file in enumerate(avro_files):
     plt.figure()
 
     # plt(datetime_time, values, label="value")
-    plt.plot(datetime_time, values, label="Temperature", linewidth=0.5)
-    plt.ylabel("Temperature °C")
+    plt.plot(datetime_time, values, label="eda", linewidth=0.5)
+    plt.ylabel("Eda uS")
     plt.grid(True)
     plt.legend(loc="best")
-    plt.savefig('plot/temperature/temperature' + file + '.png')
+    plt.savefig('plot/eda/eda' + file + '.png')
     # plt.show()
