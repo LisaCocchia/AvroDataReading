@@ -23,7 +23,7 @@ def create_time_vector(data, length):
 
     return datetime_time
 
-def check_dir(file_name):
-    directory = os.path.dirname(file_name)
+def check_dir(directory):
+    # directory = os.path.dirname(file_name)
     if not os.path.exists(directory):
         os.makedirs(directory)

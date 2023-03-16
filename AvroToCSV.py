@@ -1,58 +1,70 @@
 import os
 import csv
-import numpy as np
 from avro.datafile import DataFileReader
 from avro.io import DatumReader
 
+import Utility
 
-def write_data(data, writer):
+
+def write_data(file, data, writer):
     values = data["values"]
     samplingFrequency = data["samplingFrequency"]
     timestampStart = data["timestampStart"]
 
-    row = np.concatenate((samplingFrequency, timestampStart, values), axis=None)
+    row = [file] + [samplingFrequency] + [timestampStart] + values
+
     writer.writerow(row)
 
 
-avro_file_path = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/2023-02-10/FEDE1-3YK3K1527W/raw_data/v6/"
-avro_files = os.listdir(avro_file_path)
+root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
 
-temperature_file = open('CSV/_temperature.csv', 'w', newline='')
-temperature_writer = csv.writer(temperature_file)
+for day in os.listdir(root):
+    file_path = root + day + "/"
+    participants = os.listdir(file_path)
+    for participant in participants:
+        avro_file_path = file_path + participant + "/raw_data/v6/"
 
-eda_file = open('CSV/_eda.csv', 'w', newline='')
-eda_writer = csv.writer(eda_file)
+        Utility.check_dir('CSV/' + day)
+        csv_path = 'CSV/' + day + "/" + participant
 
-bvp_file = open('CSV/_bvp.csv', 'w', newline='')
-bvp_writer = csv.writer(bvp_file)
+        # OPEN FILE
+        temperature_file = open(csv_path + '_temperature.csv', 'w', newline='')
+        temperature_writer = csv.writer(temperature_file)
 
-systolicPeaks_file = open('CSV/_systolicPeaks.csv', 'w', newline='')
-systolicPeaks_writer = csv.writer(systolicPeaks_file)
+        eda_file = open(csv_path + '_eda.csv', 'w', newline='')
+        eda_writer = csv.writer(eda_file)
 
-# Read Data
-for i, file in enumerate(avro_files):
+        bvp_file = open(csv_path + '_bvp.csv', 'w', newline='')
+        bvp_writer = csv.writer(bvp_file)
 
-    reader = DataFileReader(open(avro_file_path + file, "rb"), DatumReader())
+        systolicPeaks_file = open(csv_path + '_systolicPeaks.csv', 'w', newline='')
+        systolicPeaks_writer = csv.writer(systolicPeaks_file)
 
-    data = []
-    for datum in reader:
-        data = datum
-    reader.close()
-    print("Reading: ", file)
+        # Read Data
+        for file in os.listdir(avro_file_path):
 
-    eda = data["rawData"]["eda"]
-    temperature = data["rawData"]["temperature"]
-    bvp = data["rawData"]["bvp"]
-    systolicPeaks = data["rawData"]["systolicPeaks"]
+            reader = DataFileReader(open(avro_file_path + file, "rb"), DatumReader())
 
-    write_data(eda, eda_writer)
-    write_data(temperature, temperature_writer)
-    write_data(bvp, bvp_writer)
+            data = []
+            for datum in reader:
+                data = datum
+            reader.close()
+            print("Reading: ", file)
 
-    timestamp = systolicPeaks["peaksTimeNanos"]
-    systolicPeaks_writer.writerow(timestamp)
+            eda = data["rawData"]["eda"]
+            temperature = data["rawData"]["temperature"]
+            bvp = data["rawData"]["bvp"]
+            systolicPeaks = data["rawData"]["systolicPeaks"]
 
-temperature_file.close()
-eda_file.close()
-bvp_file.close()
-systolicPeaks_file.close()
+            write_data(file, eda, eda_writer)
+            write_data(file, temperature, temperature_writer)
+            write_data(file, bvp, bvp_writer)
+
+            timestamp = systolicPeaks["peaksTimeNanos"]
+            row = [file] + timestamp
+            systolicPeaks_writer.writerow(timestamp)
+
+        temperature_file.close()
+        eda_file.close()
+        bvp_file.close()
+        systolicPeaks_file.close()
