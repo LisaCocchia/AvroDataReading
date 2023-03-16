@@ -40,12 +40,12 @@ def read_accelerometer_data(accelerometer_data, print_info):
 
 def read_temperature_data(temperature_data, print_info):
     values = temperature_data["values"]
-    samplingFrequency = temperature["samplingFrequency"]
+    samplingFrequency = temperature_data["samplingFrequency"]
 
     # Print info about data
     if print_info:
         print("Temperature info:")
-        print("Number of samples: {}".format(len(temperature)))
+        print("Number of samples: {}".format(len(temperature_data)))
         print("Duration: {} seconds".format(len(values) / samplingFrequency))
         print(" ")
 

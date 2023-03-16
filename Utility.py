@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 
@@ -21,3 +22,8 @@ def create_time_vector(data, length):
     datetime_time = [datetime.fromtimestamp(x) for x in timeUNIX]
 
     return datetime_time
+
+def check_dir(file_name):
+    directory = os.path.dirname(file_name)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
