@@ -16,7 +16,8 @@ def write_data(file, data, writer):
     writer.writerow(row)
 
 
-root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+# root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+root = "C:/Users/lisac/OneDrive - Università degli Studi di Milano-Bicocca/Magistrale/Tesi magistrale/Empatica-Roberto Crotti/participant_data/"
 
 for day in os.listdir(root):
     file_path = root + day + "/"

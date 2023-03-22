@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 
+import numpy as np
+
 
 @staticmethod
 def print_structure(data, text):
@@ -23,7 +25,12 @@ def create_time_vector(data, length):
 
     return datetime_time
 
+
 def check_dir(directory):
     # directory = os.path.dirname(file_name)
     if not os.path.exists(directory):
         os.makedirs(directory)
+
+
+def concat_h(a, b):
+    return np.concatenate((a, b), axis=None)

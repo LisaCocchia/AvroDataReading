@@ -62,8 +62,8 @@ for i, file in enumerate(avro_files):
     plt.ylabel("Acceleration [g]")
     plt.grid(True)
     plt.legend(loc="best")
-    plt.savefig('plot/accelerometer/accelerometer_'+file+'.png')
-    # plt.show()
+    # plt.savefig('plot/accelerometer/accelerometer_'+file+'.png')
+    plt.show()
 
 
 
