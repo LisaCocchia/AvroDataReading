@@ -1,3 +1,4 @@
+import csv
 import os
 import numpy as np
 from avro.datafile import DataFileReader
@@ -24,7 +25,6 @@ def save_plot(y, x, path, title):
 def plot_data_file(data, print_info, title, path):
     values = data["values"]
     samplingFrequency = data["samplingFrequency"]
-
     # Print info about data
     if print_info:
         print("Temperature info:")
@@ -34,11 +34,12 @@ def plot_data_file(data, print_info, title, path):
 
     datetime_time = Utility.create_time_vector(data, len(values))
 
-    path = path + '/' + title
-    Utility.check_dir(path)
-    path = path + '/' + title + file + '.png'
+    if PLOT:
+        path = path + '/' + title
+        Utility.check_dir(path)
+        path = path + '/' + title + file + '.png'
 
-    save_plot(datetime_time, values, path, title)
+        save_plot(datetime_time, values, path, title)
 
     return values, datetime_time
 
@@ -48,6 +49,7 @@ root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
 #        "magistrale/Empatica-Roberto Crotti/participant_data/"
 
 PRINT_INFO = False
+PLOT = True
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
 
@@ -67,6 +69,7 @@ for day in os.listdir(root):
         eda_datetime_t = []
         bvp_total = []
         bvp_datetime_t = []
+        systolicPeaks_total = []
 
         for i, file in enumerate(os.listdir(avro_file_path)):
 
@@ -77,7 +80,6 @@ for day in os.listdir(root):
                 data = datum
             reader.close()
 
-
             print("Reading: ", file)
             eda = data["rawData"]["eda"]
             temperature = data["rawData"]["temperature"]
@@ -86,8 +88,12 @@ for day in os.listdir(root):
 
             if i == 0:
                 # Print structure
-                Utility.print_structure(temperature, "Temperature fields:")
-                Utility.print_structure(eda, "Eda fields:")
+                if PRINT_INFO:
+                    Utility.print_structure(temperature, "Temperature fields:")
+                    Utility.print_structure(eda, "Eda fields:")
+                eda_info = [eda["samplingFrequency"], eda["timestampStart"]]
+                temperature_info = [temperature["samplingFrequency"], temperature["timestampStart"]]
+                bvp_info = [bvp["samplingFrequency"], bvp["timestampStart"]]
 
             eda_value, eda_datatime = plot_data_file(eda, PRINT_INFO, "Eda", plot_path)
             temp_value, temp_datatime = plot_data_file(temperature, PRINT_INFO, "Temperature", plot_path)
@@ -102,10 +108,41 @@ for day in os.listdir(root):
             bvp_datetime_t = Utility.concat_h(bvp_datetime_t, bvp_datatime)
             bvp_total = Utility.concat_h(bvp_total, bvp_value)
 
-        # Plot
-        path = plot_path + '/' + "Temperature_" + participant + '.png'
-        save_plot(temp_datetime_t, temperature_total, path, "Temperature_tot")
-        path = plot_path + '/' + "EDA_" + participant + '.png'
-        save_plot(eda_datetime_t, eda_total, path, "Eda_tot")
-        path = plot_path + '/' + "BVP_" + participant + '.png'
-        save_plot(bvp_datetime_t, bvp_total, path, "BVP_tot")
+            systolicPeaks_total = Utility.concat_h(systolicPeaks_total, systolicPeaks["peaksTimeNanos"])
+            print(systolicPeaks_total)
+            print(len(systolicPeaks_total))
+
+        if PLOT:
+            # Plot
+            path = plot_path + '/' + "Temperature_" + participant + '.png'
+            save_plot(temp_datetime_t, temperature_total, path, "Temperature_tot")
+            path = plot_path + '/' + "EDA_" + participant + '.png'
+            save_plot(eda_datetime_t, eda_total, path, "Eda_tot")
+            path = plot_path + '/' + "BVP_" + participant + '.png'
+            save_plot(bvp_datetime_t, bvp_total, path, "BVP_tot")
+
+        # CSV
+        Utility.check_dir('CSV/' + day)
+        csv_path = 'CSV/' + day + "/" + participant
+
+        header = ["samplingFrequency", "timestampStart", "[data]"]
+
+        temperature_file = open(csv_path + '_temperature_TOT.csv', 'w', newline='')
+        temperature_writer = csv.writer(temperature_file)
+        temperature_writer.writerow(header)
+        temperature_writer.writerow(Utility.concat_h(np.array(temperature_info), eda_total))
+
+        eda_file = open(csv_path + '_eda_TOT.csv', 'w', newline='')
+        eda_writer = csv.writer(eda_file)
+        eda_writer.writerow(header)
+        eda_writer.writerow(Utility.concat_h(np.array(eda_info), eda_total))
+
+        bvp_file = open(csv_path + '_bvp_TOT.csv', 'w', newline='')
+        bvp_writer = csv.writer(bvp_file)
+        bvp_writer.writerow(header)
+        bvp_writer.writerow(Utility.concat_h(np.array(bvp_info), bvp_total))
+
+        systolicPeaks_file = open(csv_path + '_systolicPeaks_TOT.csv', 'w', newline='')
+        systolicPeaks_writer = csv.writer(systolicPeaks_file)
+        temperature_writer.writerow("[peaksTimeNanos]")
+        bvp_writer.writerow(systolicPeaks_total)
