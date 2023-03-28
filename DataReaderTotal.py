@@ -53,7 +53,6 @@ PLOT = True
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
 
-
 for day in os.listdir(root):
     file_path = root + day + "/"
     participants = os.listdir(file_path)
@@ -109,8 +108,6 @@ for day in os.listdir(root):
             bvp_total = Utility.concat_h(bvp_total, bvp_value)
 
             systolicPeaks_total = Utility.concat_h(systolicPeaks_total, systolicPeaks["peaksTimeNanos"])
-            print(systolicPeaks_total)
-            print(len(systolicPeaks_total))
 
         if PLOT:
             # Plot
@@ -123,7 +120,9 @@ for day in os.listdir(root):
 
         # CSV
         Utility.check_dir('CSV/' + day)
-        csv_path = 'CSV/' + day + "/" + participant
+        participant_folder = 'CSV/' + day + "/" + participant
+        Utility.check_dir(participant_folder)
+        csv_path = participant_folder + "/" + participant
 
         header = ["samplingFrequency", "timestampStart", "[data]"]
 
@@ -144,5 +143,5 @@ for day in os.listdir(root):
 
         systolicPeaks_file = open(csv_path + '_systolicPeaks_TOT.csv', 'w', newline='')
         systolicPeaks_writer = csv.writer(systolicPeaks_file)
-        temperature_writer.writerow("[peaksTimeNanos]")
-        bvp_writer.writerow(systolicPeaks_total)
+        systolicPeaks_writer.writerow("peaksTimeNanos")
+        systolicPeaks_writer.writerow(systolicPeaks_total)
