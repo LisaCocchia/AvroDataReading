@@ -46,21 +46,19 @@ def plot_data(_path, title, _data, datetime_time):
     save_plot(datetime_time, _data, _path, title)
 
 
-def write_csv(_path, _header, _data, _info=[]):
+def write_csv(_path, _header, _data):
     _file = open(_path, 'w', newline='')
     writer = csv.writer(_file)
-    writer.writerow(header)
-    writer.writerow(Utility.concat_h(np.array(_info), data))
+    writer.writerow(_header)
+    writer.writerow(_data)
     _file.close()
 
-
+# root = os.path.dirname(sys.executable) + '/'
 root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-# root = "C:/Users/lisac/OneDrive - Università degli Studi di Milano-Bicocca/Magistrale/Tesi " \
-#        "magistrale/Empatica-Roberto Crotti/participant_data/"
-# output_path = "C:/Users/lisac/Desktop/output/"
 output_path = "output/"
 
-PRINT_INFO = False
+PRINT_SCHEMA = True
+PRINT_DATA_INFO = True
 PLOT = True
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
@@ -89,6 +87,8 @@ for day in os.listdir(root):
 
             reader = DataFileReader(open(avro_file_path + file, "rb"), DatumReader())
 
+            if PRINT_SCHEMA & i == 0:
+                Utility.print_avro_schema(reader)
             data = []
             for datum in reader:
                 data = datum
@@ -102,7 +102,7 @@ for day in os.listdir(root):
 
             if i == 0:
                 # Print structure
-                if PRINT_INFO:
+                if PRINT_DATA_INFO:
                     Utility.print_structure(temperature, "Temperature fields:")
                     Utility.print_structure(eda, "Eda fields:")
 
@@ -112,9 +112,9 @@ for day in os.listdir(root):
                 bvp_info = [bvp["samplingFrequency"], bvp["timestampStart"]]
 
             # Get data and datatime
-            eda_value, eda_datatime = get_data_file(eda, PRINT_INFO, "Eda", plot_path)
-            temp_value, temp_datatime = get_data_file(temperature, PRINT_INFO, "Temperature", plot_path, True)
-            bvp_value, bvp_datatime = get_data_file(bvp, PRINT_INFO, "BVP", plot_path)
+            eda_value, eda_datatime = get_data_file(eda, PRINT_DATA_INFO)
+            temp_value, temp_datatime = get_data_file(temperature, PRINT_DATA_INFO, True)
+            bvp_value, bvp_datatime = get_data_file(bvp, PRINT_DATA_INFO)
 
             # Plot 15 minute charts
             plot_data(plot_path, "Eda", eda_value, eda_datatime)
@@ -148,7 +148,8 @@ for day in os.listdir(root):
 
         header = ["samplingFrequency", "timestampStart", "[data]"]
 
-        write_csv(csv_path + '_temperature_TOT.csv', header, temperature_total, temperature_info)
-        write_csv(csv_path + '_eda_TOT.csv', header, eda_total, eda_info)
-        write_csv(csv_path + '_bvp_TOT.csv', header, bvp_total, bvp_info)
+        write_csv(csv_path + '_temperature_TOT.csv', header,
+                  Utility.concat_h(np.array(temperature_info), temperature_total))
+        write_csv(csv_path + '_eda_TOT.csv', header, Utility.concat_h(np.array(eda_info), eda_total))
+        write_csv(csv_path + '_bvp_TOT.csv', header, Utility.concat_h(np.array(bvp_info), bvp_total))
         write_csv(csv_path + '_systolicPeaks_TOT.csv', "peaksTimeNanos", systolicPeaks_total)

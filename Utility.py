@@ -1,7 +1,10 @@
+import csv
+import json
 import os
 from datetime import datetime
 
 import numpy as np
+from pygments import highlight, formatters, lexers
 
 
 @staticmethod
@@ -26,6 +29,7 @@ def create_time_vector(data, length):
     return datetime_time
 
 
+@staticmethod
 def check_dir(directory):
     # directory = os.path.dirname(file_name)
     if not os.path.exists(directory):
@@ -33,12 +37,26 @@ def check_dir(directory):
     return directory + "/"
 
 
+@staticmethod
 def concat_h(a, b):
     return np.concatenate((a, b), axis=None)
 
 
+@staticmethod
 def round_list(_list, decimal):
     np_array = np.array(_list)
     np_round = np.around(np_array, decimal)
     rounded_list = list(np_round)
     return rounded_list
+
+
+@staticmethod
+def print_avro_schema(reader):
+    # Print the Avro schema
+    schema = json.loads(reader.meta.get('avro.schema').decode('utf-8'))
+    formatted_schema = json.dumps(schema, indent=3)
+    colorful_schema = highlight(formatted_schema, lexers.JsonLexer(), formatters.TerminalFormatter())
+    print(colorful_schema)
+    print(" ")
+    with open("schema_json", 'w') as f:
+        f.write(formatted_schema)

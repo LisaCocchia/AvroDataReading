@@ -5,56 +5,57 @@ from avro.datafile import DataFileReader
 from avro.io import DatumReader
 import Utility
 
+EXECUTABLE = True
 
-def write_data(file, data, writer):
-    values = data["values"]
-    samplingFrequency = data["samplingFrequency"]
-    timestampStart = data["timestampStart"]
+if EXECUTABLE:
+    root = os.path.dirname(sys.executable) + '/'
+    output_path = "../output/"
+else:
+    root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+    output_path = "output/"
 
-    _row = [file] + [samplingFrequency] + [timestampStart] + values
+
+# Write row on csv
+def write_data(_file, _data, writer):
+    values = _data["values"]
+    samplingFrequency = _data["samplingFrequency"]
+    timestampStart = _data["timestampStart"]
+
+    _row = [_file] + [samplingFrequency] + [timestampStart] + values
 
     writer.writerow(_row)
 
 
-# root = os.path.dirname(sys.executable) + '/'
-root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+# Open file and write header
+def open_file(_path, _header):
+    _file = open(_path, 'w', newline='')
+    _writer = csv.writer(_file)
+    _writer.writerow(_header)
 
-output_path = "output/"
-# output_path = "C:/Users/lisac/Desktop/output/"
+    return _file, _writer
 
-for day in os.listdir(root):
-    file_path = root + day + "/"
-    participants = os.listdir(file_path)
+
+#
+for day in next(os.walk(root))[1]:
+    print(day)
+    day_path = root + day + "/"
     csv_root = Utility.check_dir(output_path + 'CSV(15 min)/' + day)
 
-    for participant in participants:
-        avro_file_path = file_path + participant + "/raw_data/v6/"
-
+    for participant in next(os.walk(day_path))[1]:
         csv_path = Utility.check_dir(csv_root + "/" + participant)
         csv_path = csv_path + participant
 
-        # OPEN FILE
+        # Create and open file
         header = ["filename", "samplingFrequency", "timestampStart", "[data]"]
-        temperature_file = open(csv_path + '_temperature.csv', 'w', newline='')
-        temperature_writer = csv.writer(temperature_file)
-        temperature_writer.writerow(header)
-
-        eda_file = open(csv_path + '_eda.csv', 'w', newline='')
-        eda_writer = csv.writer(eda_file)
-        eda_writer.writerow(header)
-
-        bvp_file = open(csv_path + '_bvp.csv', 'w', newline='')
-        bvp_writer = csv.writer(bvp_file)
-        bvp_writer.writerow(header)
-
-        systolicPeaks_file = open(csv_path + '_systolicPeaks.csv', 'w', newline='')
-        systolicPeaks_writer = csv.writer(systolicPeaks_file)
-        systolicPeaks_writer.writerow("peaksTimeNanos")
+        temperature_file, temperature_writer = open_file(csv_path + "_temperature.csv", header)
+        eda_file, eda_writer = open_file(csv_path + "_eda.csv", header)
+        bvp_file, bvp_writer = open_file(csv_path + "_bvp.csv", header)
+        systolicPeaks_file, systolicPeaks_writer = open_file(csv_path + "_systolicPeaks.csv", ["peaksTimeNanos"])
 
         # Read Data
-        for file in os.listdir(avro_file_path):
-
-            reader = DataFileReader(open(avro_file_path + file, "rb"), DatumReader())
+        participant_directory = day_path + participant + "/raw_data/v6/"
+        for file in os.listdir(participant_directory):
+            reader = DataFileReader(open(participant_directory + file, "rb"), DatumReader())
 
             data = []
             for datum in reader:
@@ -67,6 +68,7 @@ for day in os.listdir(root):
             bvp = data["rawData"]["bvp"]
             systolicPeaks = data["rawData"]["systolicPeaks"]
 
+            # Write row
             write_data(file, eda, eda_writer)
             write_data(file, temperature, temperature_writer)
             write_data(file, bvp, bvp_writer)
@@ -79,3 +81,8 @@ for day in os.listdir(root):
         eda_file.close()
         bvp_file.close()
         systolicPeaks_file.close()
+
+if EXECUTABLE:
+    print("\nConversion complete")
+    print("Press any key to close")
+    input()
