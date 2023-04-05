@@ -63,14 +63,14 @@ PLOT = True
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
 
-for day in os.listdir(root):
+for day in next(os.walk(root))[1]:
     print(day)
     file_path = root + day + "/"
 
     plot_root = Utility.check_dir(output_path + 'PLOT/' + day)
     csv_root = Utility.check_dir(output_path + 'CSV/' + day)
 
-    for participant in os.listdir(file_path):
+    for participant in next(os.walk(file_path))[1]:
         avro_file_path = file_path + participant + "/raw_data/v6/"
 
         plot_path = Utility.check_dir(plot_root + "/" + participant)
