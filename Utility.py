@@ -30,7 +30,15 @@ def check_dir(directory):
     # directory = os.path.dirname(file_name)
     if not os.path.exists(directory):
         os.makedirs(directory)
+    return directory + "/"
 
 
 def concat_h(a, b):
     return np.concatenate((a, b), axis=None)
+
+
+def round_list(_list, decimal):
+    np_array = np.array(_list)
+    np_round = np.around(np_array, decimal)
+    rounded_list = list(np_round)
+    return rounded_list

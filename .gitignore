@@ -1,6 +1,5 @@
 # Plot directory
-PLOT/
-CSV/
+output/
 
 
 # Byte-compiled / optimized / DLL files

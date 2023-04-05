@@ -11,35 +11,45 @@ def write_data(file, data, writer):
     samplingFrequency = data["samplingFrequency"]
     timestampStart = data["timestampStart"]
 
-    row = [file] + [samplingFrequency] + [timestampStart] + values
+    _row = [file] + [samplingFrequency] + [timestampStart] + values
 
-    writer.writerow(row)
+    writer.writerow(_row)
 
 
-# root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-root = "C:/Users/lisac/OneDrive - Università degli Studi di Milano-Bicocca/Magistrale/Tesi magistrale/Empatica-Roberto Crotti/participant_data/"
+root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+# root = "C:/Users/lisac/OneDrive - Università degli Studi di Milano-Bicocca/Magistrale/Tesi magistrale/
+# Empatica-Roberto Crotti/participant_data/"
+output_path = "output/"
+# output_path = "C:/Users/lisac/Desktop/output/"
 
 for day in os.listdir(root):
     file_path = root + day + "/"
     participants = os.listdir(file_path)
+    csv_root = Utility.check_dir(output_path + 'CSV(15 min)/' + day)
+
     for participant in participants:
         avro_file_path = file_path + participant + "/raw_data/v6/"
 
-        Utility.check_dir('CSV/' + day)
-        csv_path = 'CSV/' + day + "/" + participant
+        csv_path = Utility.check_dir(csv_root + "/" + participant)
+        csv_path = csv_path + participant
 
         # OPEN FILE
+        header = ["filename", "samplingFrequency", "timestampStart", "[data]"]
         temperature_file = open(csv_path + '_temperature.csv', 'w', newline='')
         temperature_writer = csv.writer(temperature_file)
+        temperature_writer.writerow(header)
 
         eda_file = open(csv_path + '_eda.csv', 'w', newline='')
         eda_writer = csv.writer(eda_file)
+        eda_writer.writerow(header)
 
         bvp_file = open(csv_path + '_bvp.csv', 'w', newline='')
         bvp_writer = csv.writer(bvp_file)
+        bvp_writer.writerow(header)
 
         systolicPeaks_file = open(csv_path + '_systolicPeaks.csv', 'w', newline='')
         systolicPeaks_writer = csv.writer(systolicPeaks_file)
+        systolicPeaks_writer.writerow("peaksTimeNanos")
 
         # Read Data
         for file in os.listdir(avro_file_path):
