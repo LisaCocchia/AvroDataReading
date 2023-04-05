@@ -1,8 +1,8 @@
 import os
 import csv
+import sys
 from avro.datafile import DataFileReader
 from avro.io import DatumReader
-
 import Utility
 
 
@@ -16,9 +16,9 @@ def write_data(file, data, writer):
     writer.writerow(_row)
 
 
+# root = os.path.dirname(sys.executable) + '/'
 root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-# root = "C:/Users/lisac/OneDrive - Università degli Studi di Milano-Bicocca/Magistrale/Tesi magistrale/
-# Empatica-Roberto Crotti/participant_data/"
+
 output_path = "output/"
 # output_path = "C:/Users/lisac/Desktop/output/"
 
