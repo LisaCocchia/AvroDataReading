@@ -1,6 +1,6 @@
-import csv
 import json
 import os
+import sys
 from datetime import datetime
 
 import numpy as np
@@ -60,3 +60,17 @@ def print_avro_schema(reader):
     print(" ")
     with open("schema_json", 'w') as f:
         f.write(formatted_schema)
+
+
+def get_path(EXECUTABLE, CLI):
+    if EXECUTABLE:
+        root = os.path.dirname(sys.executable) + '/'
+        output_path = "../output/"
+    elif CLI:
+        os.chdir("../participant_data")
+        root = os.getcwd() + "/"
+        output_path = "../output/"
+    else:  # LOCAL
+        root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+        output_path = "output/"
+    return root, output_path

@@ -7,6 +7,16 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import Utility
 
+EXECUTABLE = False
+CLI = True
+PRINT_SCHEMA = False
+PRINT_DATA_INFO = False
+PLOT = True
+plt.rcParams['figure.dpi'] = 300
+plt.rcParams['savefig.dpi'] = 300
+
+root, output_path = Utility.get_path(EXECUTABLE, CLI)
+
 
 def save_plot(y, x, path, title):
     # Plot
@@ -53,15 +63,6 @@ def write_csv(_path, _header, _data):
     writer.writerow(_data)
     _file.close()
 
-# root = os.path.dirname(sys.executable) + '/'
-root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-output_path = "output/"
-
-PRINT_SCHEMA = True
-PRINT_DATA_INFO = True
-PLOT = True
-plt.rcParams['figure.dpi'] = 300
-plt.rcParams['savefig.dpi'] = 300
 
 for day in next(os.walk(root))[1]:
     print(day)
@@ -84,10 +85,9 @@ for day in next(os.walk(root))[1]:
         systolicPeaks_total = []
 
         for i, file in enumerate(os.listdir(avro_file_path)):
-
             reader = DataFileReader(open(avro_file_path + file, "rb"), DatumReader())
 
-            if PRINT_SCHEMA & i == 0:
+            if PRINT_SCHEMA and i == 0:
                 Utility.print_avro_schema(reader)
             data = []
             for datum in reader:
@@ -106,7 +106,7 @@ for day in next(os.walk(root))[1]:
                     Utility.print_structure(temperature, "Temperature fields:")
                     Utility.print_structure(eda, "Eda fields:")
 
-                # Data info for 15 minute CSV
+                # Data info for CSV
                 eda_info = [eda["samplingFrequency"], eda["timestampStart"]]
                 temperature_info = [temperature["samplingFrequency"], temperature["timestampStart"]]
                 bvp_info = [bvp["samplingFrequency"], bvp["timestampStart"]]
@@ -116,10 +116,10 @@ for day in next(os.walk(root))[1]:
             temp_value, temp_datatime = get_data_file(temperature, PRINT_DATA_INFO, True)
             bvp_value, bvp_datatime = get_data_file(bvp, PRINT_DATA_INFO)
 
-            # Plot 15 minute charts
-            plot_data(plot_path, "Eda", eda_value, eda_datatime)
-            plot_data(plot_path, "Temperature", temp_value, temp_datatime)
-            plot_data(plot_path, "BVP", bvp_value, bvp_datatime)
+            # # Plot 15 minute charts
+            # plot_data(plot_path, "Eda", eda_value, eda_datatime)
+            # plot_data(plot_path, "Temperature", temp_value, temp_datatime)
+            # plot_data(plot_path, "BVP", bvp_value, bvp_datatime)
 
             # Aggregate data
             temp_datetime_t = Utility.concat_h(temp_datetime_t, temp_datatime)

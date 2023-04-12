@@ -1,6 +1,5 @@
 import os
 import csv
-import sys
 from avro.datafile import DataFileReader
 from avro.io import DatumReader
 import Utility
@@ -8,16 +7,7 @@ import Utility
 EXECUTABLE = False
 CLI = True
 
-if EXECUTABLE:
-    root = os.path.dirname(sys.executable) + '/'
-    output_path = "../output/"
-elif CLI:
-    os.chdir("../participant_data")
-    root = os.getcwd() + "/"
-    output_path = "../output/"
-else:  # LOCAL
-    root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-    output_path = "output/"
+root, output_path = Utility.get_path(EXECUTABLE, CLI)
 
 
 # Write row on csv
@@ -40,7 +30,7 @@ def open_file(_path, _header):
     return _file, _writer
 
 
-# For all day folder
+# Read data
 for day in next(os.walk(root))[1]:
     print(day)
     day_path = root + day + "/"
@@ -57,29 +47,31 @@ for day in next(os.walk(root))[1]:
         systolicPeaks_file, systolicPeaks_writer = open_file(csv_path + "_systolicPeaks.csv", ["peaksTimeNanos"])
 
         # Read Data
-        participant_directory = day_path + participant + "/raw_data/v6/"
-        for file in os.listdir(participant_directory):
-            reader = DataFileReader(open(participant_directory + file, "rb"), DatumReader())
+        participant_directory = day_path + participant
+        if not os.path.exists(participant_directory):
+            data_path = participant_directory + "/raw_data/v6/"
+            for file in os.listdir(data_path):
+                reader = DataFileReader(open(data_path + file, "rb"), DatumReader())
 
-            data = []
-            for datum in reader:
-                data = datum
-            reader.close()
-            print("Reading: ", file)
+                data = []
+                for datum in reader:
+                    data = datum
+                reader.close()
+                print("Reading: ", file)
 
-            eda = data["rawData"]["eda"]
-            temperature = data["rawData"]["temperature"]
-            bvp = data["rawData"]["bvp"]
-            systolicPeaks = data["rawData"]["systolicPeaks"]
+                eda = data["rawData"]["eda"]
+                temperature = data["rawData"]["temperature"]
+                bvp = data["rawData"]["bvp"]
+                systolicPeaks = data["rawData"]["systolicPeaks"]
 
-            # Write row
-            write_data(file, eda, eda_writer)
-            write_data(file, temperature, temperature_writer)
-            write_data(file, bvp, bvp_writer)
+                # Write row
+                write_data(file, eda, eda_writer)
+                write_data(file, temperature, temperature_writer)
+                write_data(file, bvp, bvp_writer)
 
-            timestamp = systolicPeaks["peaksTimeNanos"]
-            row = [file] + timestamp
-            systolicPeaks_writer.writerow(timestamp)
+                timestamp = systolicPeaks["peaksTimeNanos"]
+                row = [file] + timestamp
+                systolicPeaks_writer.writerow(timestamp)
 
         temperature_file.close()
         eda_file.close()

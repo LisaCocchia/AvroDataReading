@@ -1,8 +1,5 @@
-import csv
 import os
 import sys
-
-import numpy as np
 from avro.datafile import DataFileReader
 from avro.io import DatumReader
 import matplotlib.pyplot as plt
@@ -12,16 +9,7 @@ import Utility
 EXECUTABLE = False
 CLI = True
 
-if EXECUTABLE:
-    root = os.path.dirname(sys.executable) + '/'
-    output_path = "../output/"
-elif CLI:
-    os.chdir("../participant_data")
-    root = os.getcwd() + "/"
-    output_path = "../output/"
-else:       # LOCAL
-    root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-    output_path = "output/"
+root, output_path = Utility.get_path(EXECUTABLE, CLI)
 
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
@@ -59,25 +47,26 @@ for day in next(os.walk(root))[1]:
     plot_root = Utility.check_dir(output_path + 'PLOT/' + day)
 
     for participant in next(os.walk(day_path))[1]:
-        participant_path = day_path + participant + "/raw_data/v6/"
-
         plot_path = Utility.check_dir(plot_root + "/" + participant)
 
-        for i, file in enumerate(os.listdir(participant_path)):
+        participant_directory = day_path + participant
+        if not os.path.exists(participant_directory):
+            data_path = participant_directory + "/raw_data/v6/"
+            for i, file in enumerate(os.listdir(data_path)):
 
-            reader = DataFileReader(open(participant_path + file, "rb"), DatumReader())
+                reader = DataFileReader(open(data_path + file, "rb"), DatumReader())
 
-            data = []
-            for datum in reader:
-                data = datum
-            reader.close()
+                data = []
+                for datum in reader:
+                    data = datum
+                reader.close()
 
-            print("Reading: ", file)
-            eda = data["rawData"]["eda"]
-            temperature = data["rawData"]["temperature"]
-            bvp = data["rawData"]["bvp"]
+                print("Reading: ", file)
+                eda = data["rawData"]["eda"]
+                temperature = data["rawData"]["temperature"]
+                bvp = data["rawData"]["bvp"]
 
-            # Save plot of 15 minute charts
-            generate_plot(plot_path, "Eda", eda)
-            generate_plot(plot_path, "Temperature", temperature, True)
-            generate_plot(plot_path, "BVP", bvp)
+                # Save plot of 15 minute charts
+                generate_plot(plot_path, "Eda", eda)
+                generate_plot(plot_path, "Temperature", temperature, True)
+                generate_plot(plot_path, "BVP", bvp)
