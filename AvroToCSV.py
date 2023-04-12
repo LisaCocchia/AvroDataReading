@@ -5,12 +5,17 @@ from avro.datafile import DataFileReader
 from avro.io import DatumReader
 import Utility
 
-EXECUTABLE = True
+EXECUTABLE = False
+CLI = True
 
 if EXECUTABLE:
     root = os.path.dirname(sys.executable) + '/'
     output_path = "../output/"
-else:
+elif CLI:
+    os.chdir("../participant_data")
+    root = os.getcwd() + "/"
+    output_path = "../output/"
+else:  # LOCAL
     root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
     output_path = "output/"
 
@@ -35,12 +40,11 @@ def open_file(_path, _header):
     return _file, _writer
 
 
-#
+# For all day folder
 for day in next(os.walk(root))[1]:
     print(day)
     day_path = root + day + "/"
     csv_root = Utility.check_dir(output_path + 'CSV(15 min)/' + day)
-
     for participant in next(os.walk(day_path))[1]:
         csv_path = Utility.check_dir(csv_root + "/" + participant)
         csv_path = csv_path + participant

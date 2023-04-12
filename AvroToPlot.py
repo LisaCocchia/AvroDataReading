@@ -9,14 +9,20 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import Utility
 
-EXECUTABLE = True
+EXECUTABLE = False
+CLI = True
 
 if EXECUTABLE:
     root = os.path.dirname(sys.executable) + '/'
     output_path = "../output/"
-else:
+elif CLI:
+    os.chdir("../participant_data")
+    root = os.getcwd() + "/"
+    output_path = "../output/"
+else:       # LOCAL
     root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
     output_path = "output/"
+
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
 
