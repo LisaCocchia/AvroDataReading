@@ -4,21 +4,29 @@ import sys
 from datetime import datetime
 
 import numpy as np
+from avro.datafile import DataFileReader
+from avro.io import DatumReader
+from matplotlib import pyplot as plt, dates
 from pygments import highlight, formatters, lexers
 
 
-@staticmethod
-def print_structure(data, text):
-    print(text)
-    for key, val in data.items():
-        print("- " + key)
-        if type(val) is dict:
-            for k in val.keys():
-                print(" - " + k)
-    print(" ")
+def read_avro_data(input_path, file, PRINT_SCHEMA=False):
+    reader = DataFileReader(open(input_path + file, "rb"), DatumReader())
+    if PRINT_SCHEMA:
+        print_avro_schema(reader)
+    data = []
+    for datum in reader:
+        data = datum
+    reader.close()
+
+    eda = data['rawData']['eda']
+    temperature = data['rawData']['temperature']
+    bvp = data['rawData']['bvp']
+    systolicPeaks = data['rawData']['systolicPeaks']
+
+    return eda, temperature, bvp, systolicPeaks
 
 
-@staticmethod
 def create_time_vector(data, length):
     # Create time vector (in your local timezone)
     startSeconds = data["timestampStart"] / 1000000
@@ -29,7 +37,6 @@ def create_time_vector(data, length):
     return datetime_time
 
 
-@staticmethod
 def check_dir(directory):
     # directory = os.path.dirname(file_name)
     if not os.path.exists(directory):
@@ -37,12 +44,10 @@ def check_dir(directory):
     return directory + "/"
 
 
-@staticmethod
 def concat_h(a, b):
     return np.concatenate((a, b), axis=None)
 
 
-@staticmethod
 def round_list(_list, decimal):
     np_array = np.array(_list)
     np_round = np.around(np_array, decimal)
@@ -50,7 +55,6 @@ def round_list(_list, decimal):
     return rounded_list
 
 
-@staticmethod
 def print_avro_schema(reader):
     # Print the Avro schema
     schema = json.loads(reader.meta.get('avro.schema').decode('utf-8'))
@@ -64,13 +68,33 @@ def print_avro_schema(reader):
 
 def get_path(EXECUTABLE, CLI):
     if EXECUTABLE:
-        root = os.path.dirname(sys.executable) + '/'
-        output_path = "../output/"
+        input_root = os.path.dirname(sys.executable) + '/'
+        output_root = "../output/"
     elif CLI:
         os.chdir("../participant_data")
-        root = os.getcwd() + "/"
-        output_path = "../output/"
+        input_root = os.getcwd() + "/"
+        output_root = "../output/"
     else:  # LOCAL
-        root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-        output_path = "output/"
-    return root, output_path
+        input_root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+        input_root = "C:/Users/lisac/Desktop/TEST PyhtonScript/participant_data/"
+        output_root = "output/"
+    return input_root, output_root
+
+
+def remove_ext(file_name):
+    return os.path.splitext(file_name)[0]
+
+
+# Create and save plot
+def save_plot(_y, _x, _path, _title):
+    plt.figure()
+    plt.plot(_y, _x, label=_title, linewidth=0.5)
+    plt.ylabel(_title)
+    plt.grid(True)
+    plt.legend(loc="best")
+    plt.gca().xaxis.set_major_formatter(dates.DateFormatter('%d/%m - %H:%M'))
+    plt.gcf().autofmt_xdate()
+    plt.xticks(rotation=30, ha="right")
+    plt.savefig(_path)
+    plt.close()
+    return
