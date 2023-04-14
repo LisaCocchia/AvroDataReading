@@ -12,6 +12,7 @@ from pygments import highlight, formatters, lexers
 EXECUTABLE = False
 CLI = True
 
+
 def read_avro_data(input_path, file, PRINT_SCHEMA=False):
     reader = DataFileReader(open(input_path + file, "rb"), DatumReader())
     if PRINT_SCHEMA:
@@ -70,8 +71,8 @@ def print_avro_schema(reader):
 
 def get_path(EXECUTABLE, CLI):
     if EXECUTABLE:
-        input_root = os.path.dirname(sys.executable) + '/'
-        output_root = "../output/"
+        input_root = os.path.dirname(sys.executable) + '/participant_data/'
+        output_root = "output/"
     elif CLI:
         os.chdir("../participant_data")
         input_root = os.getcwd() + "/"

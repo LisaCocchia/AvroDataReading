@@ -28,11 +28,11 @@ for day in next(os.walk(input_root))[1]:
     print(day)
     day_path = input_root + day + "/"
     plot_root = Utility.check_dir(output_root + 'PLOT/' + day)
-
     # for all participant folder in day_path
     for participant in next(os.walk(day_path))[1]:
         # plot_path: output_root/PLOT/day/participant
         plot_path = plot_root + participant
+        plot_path = Utility.check_dir(plot_path)
 
         if bool(next(os.walk(plot_path))[1]):
             print("The folder of " + participant + " already exists.")
@@ -45,7 +45,6 @@ for day in next(os.walk(input_root))[1]:
                 eda, temperature, bvp, _ = Utility.read_avro_data(input_path, file)
 
                 # Save plot of 15 minute charts
-                plot_path = Utility.check_dir(plot_path)
                 file_name = Utility.remove_ext(file)
                 generate_plot(plot_path, "Eda", eda, file_name)
                 generate_plot(plot_path, "Temperature", temperature, file_name, True)
