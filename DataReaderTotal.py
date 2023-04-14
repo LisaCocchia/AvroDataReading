@@ -1,14 +1,8 @@
 import csv
 import os
-import numpy as np
-from avro.datafile import DataFileReader
-from avro.io import DatumReader
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+import numpy as np
 import Utility
-
-EXECUTABLE = False
-CLI = False
 
 PRINT_SCHEMA = False
 PLOT = True
@@ -35,7 +29,7 @@ def write_data_on_csv(_path, _header, _data):
     _file.close()
 
 
-input_root, output_root = Utility.get_path(EXECUTABLE, CLI)
+input_root, output_root = Utility.get_path(Utility.EXECUTABLE, Utility.CLI)
 
 for day in next(os.walk(input_root))[1]:
     print(day)
@@ -46,8 +40,7 @@ for day in next(os.walk(input_root))[1]:
 
     for participant in next(os.walk(day_path))[1]:
         input_path = day_path + participant + "/raw_data/v6/"
-        plot_path = Utility.check_dir(plot_root + participant)
-        csv_path = Utility.check_dir(csv_root + participant)
+        csv_path = csv_root + participant
 
         if os.path.exists(csv_path):
             print("The folder of " + participant + " already exists.")
@@ -89,6 +82,7 @@ for day in next(os.walk(input_root))[1]:
                 systolicPeaks_total = Utility.concat_h(systolicPeaks_total, systolicPeaks["peaksTimeNanos"])
 
             if PLOT:
+                plot_path = Utility.check_dir(plot_root + participant)
                 # Plot total session charts
                 path = plot_path + '/' + "Temperature_" + participant + '.png'
                 Utility.save_plot(temp_datetime_t, temperature_total, path, "Temperature_tot")
@@ -98,6 +92,7 @@ for day in next(os.walk(input_root))[1]:
                 Utility.save_plot(bvp_datetime_t, bvp_total, path, "BVP_tot")
 
             # CSV
+            csv_path = Utility.check_dir(csv_root + participant)
             header = ["samplingFrequency", "timestampStart", "[data]"]
 
             write_data_on_csv(csv_path + '_temperature_TOT.csv', header,

@@ -2,9 +2,6 @@ import os
 import matplotlib.pyplot as plt
 import Utility
 
-EXECUTABLE = False
-CLI = False
-
 
 def generate_plot(_path, _title, _data, _file_name, _round=False):
     _values = _data["values"]
@@ -21,7 +18,7 @@ def generate_plot(_path, _title, _data, _file_name, _round=False):
 
 
 print("AvroToPlot.py is running\n")
-input_root, output_root = Utility.get_path(EXECUTABLE, CLI)
+input_root, output_root = Utility.get_path(Utility.EXECUTABLE, Utility.CLI)
 
 # dpi of plot image
 plt.rcParams['figure.dpi'] = 300
@@ -37,7 +34,7 @@ for day in next(os.walk(input_root))[1]:
         # plot_path: output_root/PLOT/day/participant
         plot_path = plot_root + participant
 
-        if os.path.exists(plot_path):
+        if bool(next(os.walk(plot_path))[1]):
             print("The folder of " + participant + " already exists.")
         else:
             # input_path: root_/day/participant/raw_data/v6/
@@ -54,9 +51,7 @@ for day in next(os.walk(input_root))[1]:
                 generate_plot(plot_path, "Temperature", temperature, file_name, True)
                 generate_plot(plot_path, "BVP", bvp, file_name)
 
-if EXECUTABLE:
-    print("\nConversion complete")
+print("\nPlot generation done")
+if Utility.EXECUTABLE:
     print("Press any key to close")
     input()
-else:
-    print("\nAvroToPlot DONE")

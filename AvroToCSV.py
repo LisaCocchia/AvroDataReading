@@ -2,9 +2,6 @@ import os
 import csv
 import Utility
 
-EXECUTABLE = False
-CLI = False
-
 
 # Write row on csv
 def write_row(_file, _data, _writer):
@@ -27,7 +24,7 @@ def open_file(_path, _file_name, _header):
 
 
 print("AvroToCSV.py is running\n")
-input_root, output_root = Utility.get_path(EXECUTABLE, CLI)
+input_root, output_root = Utility.get_path(Utility.EXECUTABLE, Utility.CLI)
 
 for day in next(os.walk(input_root))[1]:
     print(day)
@@ -73,11 +70,7 @@ for day in next(os.walk(input_root))[1]:
             bvp_file.close()
             systolicPeaks_file.close()
 
-if EXECUTABLE:
-    print("\nConversion complete")
+print("\nCSV conversion done.")
+if Utility.EXECUTABLE:
     print("Press any key to close")
     input()
-else:
-    print("\nCSV conversion done.")
-
-

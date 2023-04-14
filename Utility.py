@@ -9,6 +9,8 @@ from avro.io import DatumReader
 from matplotlib import pyplot as plt, dates
 from pygments import highlight, formatters, lexers
 
+EXECUTABLE = False
+CLI = True
 
 def read_avro_data(input_path, file, PRINT_SCHEMA=False):
     reader = DataFileReader(open(input_path + file, "rb"), DatumReader())
