@@ -47,7 +47,7 @@ for day in next(os.walk(input_root))[1]:
             eda_file, eda_writer = open_file(csv_path, participant + "_eda.csv", header)
             bvp_file, bvp_writer = open_file(csv_path, participant + "_bvp.csv", header)
             systolicPeaks_file, systolicPeaks_writer = \
-                open_file(csv_path, participant + "_systolicPeaks.csv", ["peaksTimeNanos"])
+                open_file(csv_path, participant + "_systolicPeaks.csv", ["filename",  "peaksTimeNanos"])
 
             # input_path: root_/day/participant/raw_data/v6/
             input_path = day_path + participant + "/raw_data/v6/"
@@ -62,7 +62,7 @@ for day in next(os.walk(input_root))[1]:
                 write_row(file, bvp, bvp_writer)
                 timestamp = systolicPeaks["peaksTimeNanos"]
                 row = [file] + timestamp
-                systolicPeaks_writer.writerow(timestamp)
+                systolicPeaks_writer.writerow(row)
 
             # Close all CSV file
             temperature_file.close()

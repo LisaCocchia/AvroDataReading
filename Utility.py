@@ -10,7 +10,23 @@ from matplotlib import pyplot as plt, dates
 from pygments import highlight, formatters, lexers
 
 EXECUTABLE = False
-CLI = True
+CLI = not EXECUTABLE
+
+
+def get_path(EXECUTABLE, CLI):
+    if EXECUTABLE:
+        input_root = os.path.dirname(sys.executable) + '/participant_data/'
+        output_root = "output/"
+    elif CLI:
+        os.chdir("../participant_data")
+        input_root = os.getcwd() + "/"
+        output_root = "../output/"
+    else:  # LOCAL
+        input_root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
+        input_root = "C:/Users/lisac/Desktop/TEST PyhtonScript/participant_data/"
+        input_root = "C:/Users/lisac/Desktop/PROVA/1/1/participant_data/"
+        output_root = "output/"
+    return input_root, output_root
 
 
 def read_avro_data(input_path, file, PRINT_SCHEMA=False):
@@ -69,19 +85,7 @@ def print_avro_schema(reader):
         f.write(formatted_schema)
 
 
-def get_path(EXECUTABLE, CLI):
-    if EXECUTABLE:
-        input_root = os.path.dirname(sys.executable) + '/participant_data/'
-        output_root = "output/"
-    elif CLI:
-        os.chdir("../participant_data")
-        input_root = os.getcwd() + "/"
-        output_root = "../output/"
-    else:  # LOCAL
-        input_root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-        input_root = "C:/Users/lisac/Desktop/TEST PyhtonScript/participant_data/"
-        output_root = "output/"
-    return input_root, output_root
+
 
 
 def remove_ext(file_name):
