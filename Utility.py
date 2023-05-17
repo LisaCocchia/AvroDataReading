@@ -9,8 +9,8 @@ from avro.io import DatumReader
 from matplotlib import pyplot as plt, dates
 from pygments import highlight, formatters, lexers
 
-EXECUTABLE = False
-CLI = not EXECUTABLE
+EXECUTABLE = True
+CLI = False
 
 
 def get_path(EXECUTABLE, CLI):
@@ -22,9 +22,8 @@ def get_path(EXECUTABLE, CLI):
         input_root = os.getcwd() + "/"
         output_root = "../output/"
     else:  # LOCAL
-        input_root = "C:/Users/lisac/Documents/Cyberduck/1/participant_data/"
-        input_root = "C:/Users/lisac/Desktop/TEST PyhtonScript/participant_data/"
-        input_root = "C:/Users/lisac/Desktop/PROVA/1/1/participant_data/"
+        input_root = "C:/Users/lisac/OneDrive - Università degli Studi di Milano-Bicocca/Magistrale/" \
+                     "Tesi magistrale/EMPATICA/Empatica-Roberto Crotti/participant_data/"
         output_root = "output/"
     return input_root, output_root
 
@@ -53,7 +52,7 @@ def create_time_vector(data, length):
     timeUNIX = [t / data["samplingFrequency"] + startSeconds for t in timeSeconds]
     datetime_time = [datetime.fromtimestamp(x) for x in timeUNIX]
 
-    return datetime_time
+    return datetime_time, timeUNIX
 
 
 def check_dir(directory):

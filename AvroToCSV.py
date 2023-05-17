@@ -55,7 +55,8 @@ for day in next(os.walk(input_root))[1]:
             for file in os.listdir(input_path):
                 print("Reading: ", file)
                 eda, temperature, bvp, systolicPeaks = Utility.read_avro_data(input_path, file)
-
+                print(eda)
+                input()
                 # Write row on CSV file
                 write_row(file, eda, eda_writer)
                 write_row(file, temperature, temperature_writer)

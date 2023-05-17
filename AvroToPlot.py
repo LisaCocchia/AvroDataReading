@@ -7,7 +7,7 @@ def generate_plot(_path, _title, _data, _file_name, _round=False):
     _values = _data["values"]
     if _round:
         _values = Utility.round_list(_values, 2)
-    _datetime_time = Utility.create_time_vector(_data, len(_values))
+    _datetime_time, _ = Utility.create_time_vector(_data, len(_values))
 
     # _path: output_root/PLOT/data/participant/dataType/avroFileName.png
     _path = Utility.check_dir(_path + _title)

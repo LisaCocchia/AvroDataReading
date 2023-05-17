@@ -21,8 +21,8 @@ def get_data(_data, _round=False):
 
 
 # Write the aggregated data to the CSV
-def write_data_on_csv(_path, _header, _data):
-    _file = open(_path, 'w', newline='')
+def write_data_on_csv(_path, _file_name, _header, _data):
+    _file = open(_path + _file_name, 'w', newline='')
     writer = csv.writer(_file)
     writer.writerow(_header)
     writer.writerow(_data)
@@ -95,11 +95,13 @@ for day in next(os.walk(input_root))[1]:
             csv_path = Utility.check_dir(csv_root + participant)
             header = ["samplingFrequency", "timestampStart", "[data]"]
 
-            write_data_on_csv(csv_path + '_temperature_TOT.csv', header,
+            write_data_on_csv(csv_path, participant + '_temperature_TOT.csv', header,
                               Utility.concat_h(np.array(temperature_info), temperature_total))
-            write_data_on_csv(csv_path + '_eda_TOT.csv', header, Utility.concat_h(np.array(eda_info), eda_total))
-            write_data_on_csv(csv_path + '_bvp_TOT.csv', header, Utility.concat_h(np.array(bvp_info), bvp_total))
-            write_data_on_csv(csv_path + '_systolicPeaks_TOT.csv', "peaksTimeNanos", systolicPeaks_total)
+            write_data_on_csv(csv_path, participant + '_eda_TOT.csv', header,
+                              Utility.concat_h(np.array(eda_info), eda_total))
+            write_data_on_csv(csv_path, participant + '_bvp_TOT.csv', header,
+                              Utility.concat_h(np.array(bvp_info), bvp_total))
+            write_data_on_csv(csv_path, participant + '_systolicPeaks_TOT.csv', ["peaksTimeNanos"], systolicPeaks_total)
 
 print("\nConversion done.")
 if Utility.EXECUTABLE:
